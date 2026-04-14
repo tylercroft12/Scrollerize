@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Scrollerize"/>
+<meta name="theme-color" content="#0f0f13"/>
+<title>Scrollerize</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0f0f13;
+  --bg2: #16161d;
+  --bg3: #1e1e28;
+  --surface: #22222e;
+  --surface2: #2a2a38;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.15);
+  --text: #f0eff4;
+  --text2: #9896a8;
+  --text3: #5e5c70;
+  --accent: #7c6af5;
+  --accent2: #9d8ff7;
+  --accent-bg: rgba(124,106,245,0.12);
+  --green: #4ade80;
+  --green-bg: rgba(74,222,128,0.1);
+  --amber: #fbbf24;
+  --amber-bg: rgba(251,191,36,0.1);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,0.1);
+  --teal: #2dd4bf;
+  --teal-bg: rgba(45,212,191,0.1);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --font-display: 'DM Serif Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+#app { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+
+/* ── PAGE SYSTEM ── */
+.page { display: none; flex-direction: column; min-height: 100vh; min-height: 100dvh; animation: fadeSlide 0.28s ease; }
+.page.active { display: flex; }
+@keyframes fadeSlide { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── TOP BAR ── */
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 52px 20px 16px;
+  position: sticky; top: 0; z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.topbar-title { font-family: var(--font-display); font-size: 22px; flex: 1; }
+.back-btn {
+  width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border2);
+  background: var(--surface); color: var(--text); font-size: 18px; line-height: 1;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+  transition: background 0.15s;
+}
+.back-btn:active { background: var(--surface2); }
+
+/* ── SCROLL CONTENT ── */
+.scroll-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: calc(20px + var(--safe-bottom)); }
+
+/* ── HOME PAGE ── */
+#page-home { justify-content: center; align-items: center; padding: 40px 24px; gap: 0; position: relative; overflow: hidden; }
+
+.home-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 70% 50% at 50% 30%, rgba(124,106,245,0.15) 0%, transparent 70%);
+}
+
+.home-logo {
+  font-family: var(--font-display);
+  font-size: 48px;
+  letter-spacing: -1px;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.home-logo span { color: var(--accent2); font-style: italic; }
+
+.home-tagline {
+  color: var(--text2);
+  font-size: 15px;
+  text-align: center;
+  margin-bottom: 56px;
+  font-weight: 300;
+}
+
+.home-btn {
+  width: 100%; max-width: 320px; padding: 20px 24px;
+  border-radius: var(--radius); cursor: pointer;
+  font-family: var(--font-body); font-size: 16px; font-weight: 500;
+  display: flex; align-items: center; gap: 16px;
+  border: 1px solid var(--border2); background: var(--surface);
+  color: var(--text); margin-bottom: 14px;
+  transition: transform 0.15s, background 0.15s;
+  position: relative; z-index: 1;
+}
+.home-btn:active { transform: scale(0.98); background: var(--surface2); }
+.home-btn.primary { background: var(--accent); border-color: var(--accent); }
+.home-btn.primary:active { background: var(--accent2); }
+.home-btn-icon { font-size: 28px; width: 36px; text-align: center; }
+.home-btn-text { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+.home-btn-label { font-size: 17px; font-weight: 600; }
+.home-btn-sub { font-size: 13px; opacity: 0.7; font-weight: 300; }
+
+/* ── FORM ELEMENTS ── */
+.field-label { font-size: 13px; color: var(--text2); margin-bottom: 8px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+
+input[type="text"], input[type="email"], input[type="password"], textarea, select {
+  width: 100%; background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius-sm); color: var(--text); font-family: var(--font-body);
+  font-size: 16px; padding: 14px 16px; outline: none;
+  transition: border-color 0.15s;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239896a8' stroke-width='1.5' fill='none'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; }
+
+.field-group { margin-bottom: 20px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 22px; border-radius: var(--radius-sm); font-family: var(--font-body);
+  font-size: 15px; font-weight: 500; cursor: pointer; border: none;
+  transition: transform 0.12s, opacity 0.12s;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); }
+.btn-danger { background: var(--red-bg); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+.btn-full { width: 100%; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  margin-bottom: 16px;
+}
+.card-sm { padding: 14px 16px; border-radius: var(--radius-sm); }
+
+/* ── LESSON ── */
+.lesson-topic-tag {
+  display: inline-block; padding: 4px 12px; border-radius: 20px;
+  background: var(--accent-bg); color: var(--accent2);
+  font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.lesson-title { font-family: var(--font-display); font-size: 26px; line-height: 1.25; margin-bottom: 16px; }
+.lesson-body { font-size: 16px; line-height: 1.75; color: var(--text2); }
+.lesson-body p { margin-bottom: 16px; }
+.lesson-body h3 { font-family: var(--font-display); font-size: 20px; color: var(--text); margin: 24px 0 10px; }
+.lesson-body strong { color: var(--text); font-weight: 600; }
+
+.key-points { background: var(--bg3); border-left: 3px solid var(--accent); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 18px 20px; margin: 24px 0; }
+.key-points-title { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: var(--accent2); text-transform: uppercase; margin-bottom: 12px; }
+.key-points ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.key-points li { display: flex; gap: 10px; font-size: 15px; color: var(--text2); line-height: 1.5; }
+.key-points li::before { content: '→'; color: var(--accent); flex-shrink: 0; }
+
+.youtube-embed { border-radius: var(--radius-sm); overflow: hidden; margin: 20px 0; aspect-ratio: 16/9; width: 100%; }
+.youtube-embed iframe { width: 100%; height: 100%; border: none; }
+
+.lesson-actions { display: flex; flex-direction: column; gap: 12px; padding: 20px; border-top: 1px solid var(--border); background: var(--bg); position: sticky; bottom: 0; }
+
+/* ── REVIEW CARDS ── */
+.review-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  min-height: 280px; display: flex; flex-direction: column;
+  position: relative; animation: cardIn 0.3s ease;
+}
+@keyframes cardIn { from { opacity: 0; transform: scale(0.96) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+
+.review-card-type {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.type-flash { color: var(--teal); }
+.type-mc { color: var(--amber); }
+.type-quiz { color: var(--accent2); }
+
+.review-card-topic { font-size: 12px; color: var(--text3); margin-bottom: 16px; }
+.review-card-question { font-family: var(--font-display); font-size: 20px; line-height: 1.4; flex: 1; margin-bottom: 20px; }
+
+.mc-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.mc-option {
+  padding: 12px 16px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border2); background: var(--bg3);
+  font-size: 15px; cursor: pointer; text-align: left; color: var(--text);
+  font-family: var(--font-body); transition: border-color 0.15s, background 0.15s;
+}
+.mc-option:active { background: var(--surface2); }
+.mc-option.correct { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+.mc-option.wrong { border-color: var(--red); background: var(--red-bg); color: var(--red); }
+
+.reveal-btn { align-self: flex-start; }
+.answer-reveal { background: var(--bg3); border-radius: var(--radius-sm); padding: 14px 16px; margin-bottom: 16px; font-size: 15px; color: var(--text2); line-height: 1.6; display: none; }
+.answer-reveal.shown { display: block; animation: fadeSlide 0.2s ease; }
+
+/* ── RATING SLIDER ── */
+.rating-section { padding: 16px 0 0; border-top: 1px solid var(--border); margin-top: auto; }
+.rating-label { font-size: 12px; color: var(--text3); margin-bottom: 10px; display: flex; justify-content: space-between; }
+.rating-label span { font-size: 13px; font-weight: 600; color: var(--accent2); }
+
+input[type="range"] {
+  width: 100%; height: 4px; border-radius: 2px; border: none;
+  background: linear-gradient(to right, var(--red) 0%, var(--amber) 50%, var(--green) 100%);
+  outline: none; padding: 0; cursor: pointer;
+  -webkit-appearance: none; appearance: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+  background: var(--text); border: 3px solid var(--accent); cursor: pointer;
+}
+
+.rating-actions { display: flex; gap: 10px; margin-top: 14px; }
+.deep-review-btn {
+  display: flex; align-items: center; gap: 6px; padding: 8px 14px;
+  border-radius: var(--radius-sm); background: var(--amber-bg); color: var(--amber);
+  border: 1px solid rgba(251,191,36,0.3); font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: var(--font-body);
+  transition: background 0.15s;
+}
+.deep-review-btn:active { background: rgba(251,191,36,0.2); }
+
+.submit-rating-btn { flex: 1; }
+
+/* ── PROGRESS BAR ── */
+.progress-bar { height: 3px; background: var(--surface2); border-radius: 2px; margin: 12px 0; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+
+/* ── STATS ── */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+.stat-value { font-family: var(--font-display); font-size: 32px; margin-bottom: 4px; }
+.stat-label { font-size: 12px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.stat-streak { color: var(--amber); }
+.stat-retention { color: var(--green); }
+.stat-xp { color: var(--accent2); }
+.stat-mastery { color: var(--teal); }
+
+.badge-grid { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.badge {
+  display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+  border-radius: 20px; font-size: 13px; font-weight: 600;
+  border: 1px solid;
+}
+.badge-bronze { background: rgba(180,120,60,0.15); color: #cd7f32; border-color: rgba(205,127,50,0.3); }
+.badge-silver { background: rgba(180,180,200,0.15); color: #aaa9b8; border-color: rgba(170,169,184,0.3); }
+.badge-gold { background: rgba(255,200,50,0.15); color: var(--amber); border-color: rgba(251,191,36,0.3); }
+
+.daily-goal-bar { margin: 20px 0; }
+.daily-goal-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.daily-goal-title { font-size: 14px; font-weight: 500; }
+.daily-goal-count { font-size: 22px; font-weight: 600; font-family: var(--font-display); color: var(--accent2); }
+
+/* ── TOPICS LIST ── */
+.topic-item {
+  display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  margin-bottom: 10px; background: var(--surface);
+}
+.topic-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border2); flex-shrink: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.topic-check.checked { background: var(--accent); border-color: var(--accent); }
+.topic-name { flex: 1; font-size: 15px; }
+.topic-count { font-size: 12px; color: var(--text3); }
+
+/* ── SETTINGS LIST ── */
+.settings-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 0; border-bottom: 1px solid var(--border); cursor: pointer;
+}
+.settings-item:last-child { border-bottom: none; }
+.settings-item-left { display: flex; flex-direction: column; gap: 3px; }
+.settings-item-title { font-size: 16px; font-weight: 500; }
+.settings-item-sub { font-size: 13px; color: var(--text3); }
+.settings-arrow { color: var(--text3); font-size: 18px; }
+
+/* ── NOTIFICATION ── */
+.notification {
+  position: fixed; bottom: calc(20px + var(--safe-bottom)); left: 16px; right: 16px;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--radius); padding: 18px 20px; z-index: 100;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  animation: slideUp 0.3s ease;
+  display: none;
+}
+.notification.show { display: block; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.notification-title { font-weight: 600; margin-bottom: 8px; }
+.notification-body { font-size: 14px; color: var(--text2); margin-bottom: 16px; line-height: 1.5; }
+.notification-actions { display: flex; gap: 10px; }
+
+/* ── LOADING ── */
+.loading-dots { display: flex; gap: 6px; align-items: center; justify-content: center; padding: 40px; }
+.loading-dots span { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: bounce 1.2s infinite; }
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-10px); } }
+
+.loading-text { text-align: center; color: var(--text2); font-size: 14px; margin-top: -20px; padding-bottom: 40px; }
+
+/* ── AUTH ── */
+.auth-container { display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; padding: 40px 24px; gap: 0; }
+.auth-logo { font-family: var(--font-display); font-size: 42px; text-align: center; margin-bottom: 8px; }
+.auth-logo span { color: var(--accent2); font-style: italic; }
+.auth-tagline { color: var(--text2); font-size: 14px; text-align: center; margin-bottom: 48px; }
+.auth-card { width: 100%; max-width: 360px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+.auth-title { font-size: 20px; font-weight: 600; margin-bottom: 24px; text-align: center; }
+.auth-toggle { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text2); }
+.auth-toggle a { color: var(--accent2); cursor: pointer; }
+.auth-error { background: var(--red-bg); border: 1px solid rgba(248,113,113,0.3); border-radius: var(--radius-sm); padding: 12px 14px; font-size: 14px; color: var(--red); margin-bottom: 16px; display: none; }
+.auth-error.show { display: block; }
+
+/* ── API KEY SETUP ── */
+.setup-card { max-width: 400px; width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+.setup-step { display: flex; gap: 12px; margin-bottom: 20px; }
+.setup-step-num { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-bg); color: var(--accent2); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.setup-step-body { font-size: 14px; color: var(--text2); line-height: 1.6; }
+.setup-step-body a { color: var(--accent2); }
+
+/* ── TAGS / CHIPS ── */
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 13px; background: var(--surface2); border: 1px solid var(--border); color: var(--text2); }
+
+/* ── MASTERY NOTIFICATION ── */
+.mastery-notice { background: var(--amber-bg); border: 1px solid rgba(251,191,36,0.3); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; display: none; }
+.mastery-notice.show { display: block; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* ── EMPTY STATE ── */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text2); }
+.empty-state-icon { font-size: 48px; margin-bottom: 16px; }
+.empty-state-title { font-family: var(--font-display); font-size: 22px; color: var(--text); margin-bottom: 8px; }
+.empty-state-body { font-size: 15px; line-height: 1.6; }
+
+/* Utility */
+.hidden { display: none !important; }
+.text-center { text-align: center; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.gap-10 { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; gap: 10px; align-items: center; }
+.row-between { display: flex; justify-content: space-between; align-items: center; }
+.bold { font-weight: 600; }
+.muted { color: var(--text2); font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══════════════════════════════════════
+     AUTH PAGE
+══════════════════════════════════════ -->
+<div id="page-auth" class="auth-container" style="display:flex">
+  <div class="auth-logo">Scroll<span>erize</span></div>
+  <p class="auth-tagline">Replace scrolling with learning</p>
+  <div class="auth-card">
+    <div class="auth-title" id="auth-title">Sign in</div>
+    <div class="auth-error" id="auth-error"></div>
+    <div class="field-group">
+      <div class="field-label">Email</div>
+      <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email"/>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Password</div>
+      <input type="password" id="auth-password" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+    <div class="field-group hidden" id="auth-confirm-group">
+      <div class="field-label">Confirm password</div>
+      <input type="password" id="auth-confirm" placeholder="••••••••" autocomplete="new-password"/>
+    </div>
+    <button class="btn btn-primary btn-full" id="auth-submit-btn" onclick="submitAuth()">Sign in</button>
+    <div class="auth-toggle">
+      <span id="auth-toggle-text">Don't have an account?</span>
+      <a onclick="toggleAuthMode()" id="auth-toggle-link"> Sign up</a>
+    </div>
+  </div>
+  <p style="color:var(--text3);font-size:12px;text-align:center;margin-top:24px;line-height:1.6;max-width:320px">
+    Your data is stored securely in the cloud and synced across all your devices.
+  </p>
+</div>
+
+<!-- ══════════════════════════════════════
+     SETUP PAGE (API Key)
+══════════════════════════════════════ -->
+<div id="page-setup" class="auth-container" style="display:none">
+  <div class="auth-logo" style="margin-bottom:8px">Almost ready</div>
+  <p class="auth-tagline">Add your Claude API key to enable AI lessons</p>
+  <div class="setup-card">
+    <div class="setup-step">
+      <div class="setup-step-num">1</div>
+      <div class="setup-step-body">Go to <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a> and create a free account</div>
+    </div>
+    <div class="setup-step">
+      <div class="setup-step-num">2</div>
+      <div class="setup-step-body">Click <strong style="color:var(--text)">Create Key</strong> and copy your API key</div>
+    </div>
+    <div class="setup-step">
+      <div class="setup-step-num">3</div>
+      <div class="setup-step-body">Paste it below — it's stored securely in your account and never shared</div>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Claude API Key</div>
+      <input type="password" id="setup-api-key" placeholder="sk-ant-..."/>
+    </div>
+    <div class="field-group">
+      <div class="field-label">YouTube Data API Key <span style="color:var(--text3)">(optional but recommended)</span></div>
+      <input type="text" id="setup-yt-key" placeholder="AIza..."/>
+      <p style="font-size:12px;color:var(--text3);margin-top:6px">Get a free key at <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent2)">console.cloud.google.com</a> → YouTube Data API v3</p>
+    </div>
+    <div class="auth-error" id="setup-error"></div>
+    <button class="btn btn-primary btn-full" onclick="saveSetup()">Save &amp; Start Learning</button>
+    <p style="text-align:center;margin-top:14px"><a style="color:var(--text3);font-size:13px;cursor:pointer" onclick="skipSetup()">Skip for now (limited features)</a></p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 1: HOME
+══════════════════════════════════════ -->
+<div id="page-home" class="page">
+  <div class="home-bg"></div>
+  <div class="home-logo">Scroll<span>erize</span></div>
+  <p class="home-tagline">What will you learn today?</p>
+  <button class="home-btn primary" onclick="navigate('learn')">
+    <span class="home-btn-icon">✦</span>
+    <span class="home-btn-text">
+      <span class="home-btn-label">Learn Something</span>
+      <span class="home-btn-sub">AI-powered lessons on any topic</span>
+    </span>
+  </button>
+  <button class="home-btn" onclick="navigate('review')">
+    <span class="home-btn-icon">◈</span>
+    <span class="home-btn-text">
+      <span class="home-btn-label">Review Topics</span>
+      <span class="home-btn-sub">Spaced repetition flashcards</span>
+    </span>
+  </button>
+  <div style="position:absolute;bottom:calc(16px + var(--safe-bottom));right:16px;display:flex;gap:8px;align-items:center">
+    <div id="home-streak" style="display:flex;align-items:center;gap:5px;font-size:13px;color:var(--amber)"></div>
+    <button style="background:transparent;border:none;color:var(--text3);font-size:22px;cursor:pointer;padding:4px" onclick="navigate('settings')">⚙</button>
+    <button style="background:transparent;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:4px" onclick="signOut()">↩</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 2: LEARN SOMETHING
+══════════════════════════════════════ -->
+<div id="page-learn" class="page">
+  <div class="topbar">
+    <button class="back-btn" onclick="navigate('home')">←</button>
+    <span class="topbar-title">Learn Something</span>
+  </div>
+
+  <!-- STEP A: Topic Input -->
+  <div id="learn-input-step" class="scroll-content">
+    <p class="muted mb-16">Enter any topic and get a 5–10 minute lesson with key takeaways.</p>
+    <div class="field-group">
+      <div class="field-label">What do you want to learn about?</div>
+      <input type="text" id="learn-topic-input" placeholder="e.g. The Roman Empire, Quantum entanglement, How to invest…" autocomplete="off"/>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="startLesson()">Generate Lesson →</button>
+  </div>
+
+  <!-- STEP B: Lesson Display -->
+  <div id="learn-lesson-step" class="hidden" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+    <div class="scroll-content" style="flex:1;overflow-y:auto;padding-bottom:0" id="lesson-content">
+      <div id="lesson-loading">
+        <div class="loading-dots"><span></span><span></span><span></span></div>
+        <div class="loading-text">Crafting your lesson…</div>
+      </div>
+      <div id="lesson-text" class="hidden"></div>
+    </div>
+    <div class="lesson-actions">
+      <button class="btn btn-secondary btn-full" onclick="learnMore()">Learn More About This</button>
+      <button class="btn btn-primary btn-full" onclick="sendToReview()">✦ Send to My Review</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 3: REVIEW
+══════════════════════════════════════ -->
+<div id="page-review" class="page">
+  <div class="topbar">
+    <button class="back-btn" onclick="navigate('home')">←</button>
+    <span class="topbar-title">Review</span>
+    <button style="background:transparent;border:none;color:var(--text2);font-size:22px;cursor:pointer;padding:4px" onclick="navigate('settings')">⚙</button>
+  </div>
+
+  <div id="review-empty" class="hidden scroll-content">
+    <div class="empty-state">
+      <div class="empty-state-icon">◈</div>
+      <div class="empty-state-title">No cards yet</div>
+      <div class="empty-state-body">Learn a topic and send it to review, or create your own cards in Settings.</div>
+    </div>
+    <button class="btn btn-primary btn-full mt-24" onclick="navigate('learn')">Start Learning →</button>
+  </div>
+
+  <div id="review-active" class="hidden" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+    <div class="scroll-content" style="flex:1;overflow-y:auto">
+      <!-- Progress -->
+      <div style="margin-bottom:20px">
+        <div class="row-between mb-8">
+          <span style="font-size:13px;color:var(--text3)" id="review-progress-label">Card 1 of 10</span>
+          <span style="font-size:13px;color:var(--text3)" id="review-today-label">Today: 0/25</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="review-progress-fill" style="width:0%"></div></div>
+      </div>
+
+      <!-- Mastery notification -->
+      <div class="mastery-notice" id="mastery-notice">
+        <div style="font-weight:600;margin-bottom:6px">🏆 Topic mastered!</div>
+        <div style="font-size:14px;color:var(--text2);margin-bottom:12px" id="mastery-notice-text"></div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-danger" style="flex:1;padding:10px" onclick="deleteMasteredTopic()">Delete Topic</button>
+          <button class="btn btn-ghost" style="flex:1;padding:10px" onclick="keepMasteredTopic()">Keep It</button>
+        </div>
+      </div>
+
+      <!-- The card -->
+      <div id="current-review-card"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 4: SETTINGS
+══════════════════════════════════════ -->
+<div id="page-settings" class="page">
+  <div class="topbar">
+    <button class="back-btn" onclick="navigate('home')">←</button>
+    <span class="topbar-title">Settings</span>
+  </div>
+  <div class="scroll-content">
+    <!-- Review filter -->
+    <div class="card mb-16">
+      <div class="field-label mb-16">What do you want to review?</div>
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        <button class="btn" id="filter-random-btn" onclick="setReviewFilter('random')" style="flex:1;padding:10px 0">Random</button>
+        <button class="btn btn-ghost" id="filter-topics-btn" onclick="setReviewFilter('topics')" style="flex:1;padding:10px 0">By Topics</button>
+      </div>
+      <div id="topic-filter-section" class="hidden">
+        <div class="field-label mb-8">Sort by</div>
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <button class="btn btn-ghost" id="sort-alpha-btn" onclick="setTopicSort('alpha')" style="flex:1;padding:8px 0;font-size:13px">A → Z</button>
+          <button class="btn btn-ghost" id="sort-date-btn" onclick="setTopicSort('date')" style="flex:1;padding:8px 0;font-size:13px">Date Added</button>
+        </div>
+        <div id="settings-topic-list"></div>
+      </div>
+    </div>
+
+    <!-- Daily goal -->
+    <div class="card mb-16">
+      <div class="field-label mb-8">Daily review goal</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <input type="range" id="daily-goal-slider" min="5" max="100" step="5" value="25" oninput="updateDailyGoal(this.value)" style="flex:1"/>
+        <span style="font-size:20px;font-weight:600;min-width:40px;text-align:right" id="daily-goal-display">25</span>
+      </div>
+      <p style="font-size:13px;color:var(--text3);margin-top:8px">cards per day</p>
+    </div>
+
+    <!-- API Key -->
+    <div class="card mb-16">
+      <div class="field-label mb-8">Claude API Key</div>
+      <input type="password" id="settings-api-key" placeholder="sk-ant-…" style="margin-bottom:10px"/>
+      <div class="field-label mb-8" style="margin-top:8px">YouTube API Key <span style="color:var(--text3)">(optional)</span></div>
+      <input type="text" id="settings-yt-key" placeholder="AIza…" style="margin-bottom:10px"/>
+      <button class="btn btn-secondary" onclick="saveApiKeys()">Save Keys</button>
+    </div>
+
+    <!-- Menu items -->
+    <div class="card" style="padding:4px 20px">
+      <div class="settings-item" onclick="navigate('make-questions')">
+        <div class="settings-item-left">
+          <div class="settings-item-title">Make Your Own Questions</div>
+          <div class="settings-item-sub">Create cards manually</div>
+        </div>
+        <span class="settings-arrow">›</span>
+      </div>
+      <div class="settings-item" onclick="navigate('notes-to-cards')">
+        <div class="settings-item-left">
+          <div class="settings-item-title">Questions from Notes</div>
+          <div class="settings-item-sub">Paste notes → AI creates cards</div>
+        </div>
+        <span class="settings-arrow">›</span>
+      </div>
+      <div class="settings-item" onclick="navigate('stats')">
+        <div class="settings-item-left">
+          <div class="settings-item-title">Stats &amp; Progress</div>
+          <div class="settings-item-sub">Streaks, badges, retention</div>
+        </div>
+        <span class="settings-arrow">›</span>
+      </div>
+      <div class="settings-item" onclick="navigate('delete-topics')">
+        <div class="settings-item-left">
+          <div class="settings-item-title">Delete Topics</div>
+          <div class="settings-item-sub">Remove topics and their cards</div>
+        </div>
+        <span class="settings-arrow">›</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 5: MAKE QUESTIONS
+══════════════════════════════════════ -->
+<div id="page-make-questions" class="page">
+  <div class="topbar">
+    <button class="back-btn" onclick="navigate('settings')">←</button>
+    <span class="topbar-title">Make a Question</span>
+  </div>
+  <div class="scroll-content">
+    <div class="field-group">
+      <div class="field-label">Topic</div>
+      <input type="text" id="mq-topic" placeholder="e.g. Roman Empire" autocomplete="off" oninput="suggestTopics(this.value)"/>
+      <div id="mq-topic-suggestions" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Question</div>
+      <textarea id="mq-question" placeholder="What was the significance of the Pax Romana?"></textarea>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Answer <span style="color:var(--text3)">(optional)</span></div>
+      <textarea id="mq-answer" placeholder="Optional — leave blank for open-ended cards" style="min-height:80px"></textarea>
+    </div>
+    <div class="gap-10">
+      <button class="btn btn-primary btn-full" onclick="createCard('exit')">Create Card &amp; Exit</button>
+      <button class="btn btn-secondary btn-full" onclick="createCard('another')">Create Card &amp; Start Another</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE 6: NOTES TO CARDS
+══════════════════════════════════════ -->
+<div id="page-notes-to-cards" class="page">
+  <div class="topbar">
+    <button class="back-btn" onclick="navigate('settings')">←</button>
+    <span class="topbar-title">Questions from Notes</span>
+  </div>
+  <div id="ntc-input-step" class="scroll-content">
+    <p class="muted mb-16">Paste your notes below and Claude will generate review cards from the main points.</p>
+    <div class="field-group">
+      <div class="field-label">Topic name</div>
+      <input type="text" id="ntc-topic" placeholder="What subject are these notes from?"/>
+    </div>
+    <div class="field-group">
+      <div class="field-label">Your notes</div>
+      <textarea id="ntc-notes" placeholder="Paste your notes here…" style="min-height:240px"></textarea>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="generateFromNotes()">Create Review Cards →</button>
+  </div>
+  <div id="ntc-loading-step" class="hidden" style="flex:1;justify-content:center;align-items:center;display:none;flex-direction:column">
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+    <div class="loading-text">Generating cards from your notes…</div>
+  </div>
+  <div id="ntc-done-step" class="hidden scroll-content">
+    <div style="text-align:center;padding:40px 20px">
+      <div style="font-size:48px;margin-bottom:16px">✦</div>
+      <div class="empty-state-title" id="ntc-done-title"></div>
+      <p class="muted mt-12 mb-24" id="ntc-done-body"></p>
+      <button class="btn btn-primary btn-full" onclick="navigate('review')">Start Reviewing →</button>
+      <button class="btn btn-ghost btn-full mt-12" onclick="navigate('settings')">Back to Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: STATS
+══════════════════════════════════════ -->
+<div id="page-stats" class="page">
+  <div class="topbar">
+    <button class="back-btn" onclick="navigate('settings')">←</button>
+    <span class="topbar-title">Stats &amp; Progress</span>
+  </div>
+  <div class="scroll-content">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value stat-streak" id="stat-streak-val">0🔥</div>
+        <div class="stat-label">Day streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value stat-retention" id="stat-retention-val">—</div>
+        <div class="stat-label">Retention rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value stat-xp" id="stat-xp-val">0</div>
+        <div class="stat-label">Total XP</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value stat-mastery" id="stat-mastery-val">0</div>
+        <div class="stat-label">Topics mastered</div>
+      </div>
+    </div>
+
+    <div class="daily-goal-bar card">
+      <div class="daily-goal-header">
+        <span class="daily-goal-title">Today's goal</span>
+        <span class="daily-goal-count" id="stat-daily-progress">0/25</span>
+      </div>
+      <div class="progress-bar" style="height:6px"><div class="progress-fill" id="stat-daily-fill" style="width:0%"></div></div>
+      <p style="font-size:13px;color:var(--text3);margin-top:8px" id="stat-daily-msg">Keep going!</p>
+    </div>
+
+    <div class="mb-16">
+      <div class="field-label mb-12">Mastery badges</div>
+      <div class="badge-grid" id="badge-grid">
+        <div style="color:var(--text3);font-size:14px">Complete topics to earn badges</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="field-label mb-12">Review history (last 7 days)</div>
+      <div id="review-history-chart" style="display:flex;align-items:flex-end;gap:6px;height:80px"></div>
+      <div id="review-history-labels" style="display:flex;gap:6px;margin-top:6px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAGE: DELETE TOPICS
+══════════════════════════════════════ -->
+<div id="page-delete-topics" class="page">
+  <div class="topbar">
+    <button class="back-btn" onclick="navigate('settings')">←</button>
+    <span class="topbar-title">Delete Topics</span>
+  </div>
+  <div class="scroll-content">
+    <p class="muted mb-16">Select topics to delete. This will also delete all associated review cards.</p>
+    <div id="delete-topic-list"></div>
+    <button class="btn btn-danger btn-full mt-16" id="delete-confirm-btn" onclick="confirmDeleteTopics()" disabled>Delete Selected</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     GLOBAL NOTIFICATION
+══════════════════════════════════════ -->
+<div class="notification" id="global-notification">
+  <div class="notification-title" id="notif-title"></div>
+  <div class="notification-body" id="notif-body"></div>
+  <div class="notification-actions" id="notif-actions"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// STATE & STORAGE
+// ══════════════════════════════════════
+
+const DB_KEY = 'scrollerize_v1';
+let state = {
+  user: null,
+  apiKey: '',
+  ytKey: '',
+  topics: [],       // [{id, name, createdAt, cards:[]}]
+  cards: [],        // flat list for SM-2
+  settings: {
+    reviewFilter: 'random',
+    selectedTopics: [],
+    topicSort: 'date',
+    dailyGoal: 25
+  },
+  stats: {
+    streak: 0,
+    lastReviewDate: null,
+    totalReviewed: 0,
+    totalCorrect: 0,
+    xp: 0,
+    masteredTopics: 0,
+    reviewHistory: [],  // [{date, count}]
+    todayCount: 0,
+    todayDate: null
+  }
+};
+
+let currentPage = 'auth';
+let currentLesson = { topic: '', text: '', keyPoints: [], depth: 0 };
+let reviewQueue = [];
+let currentCardIndex = 0;
+let masteryPendingTopicId = null;
+let authMode = 'signin';
+
+function save() {
+  try { localStorage.setItem(DB_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+function load() {
+  try {
+    const s = localStorage.getItem(DB_KEY);
+    if (s) state = { ...state, ...JSON.parse(s) };
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════
+// AUTH (localStorage-based for simplicity)
+// ══════════════════════════════════════
+
+function toggleAuthMode() {
+  authMode = authMode === 'signin' ? 'signup' : 'signin';
+  document.getElementById('auth-title').textContent = authMode === 'signin' ? 'Sign in' : 'Create account';
+  document.getElementById('auth-submit-btn').textContent = authMode === 'signin' ? 'Sign in' : 'Create account';
+  document.getElementById('auth-toggle-text').textContent = authMode === 'signin' ? "Don't have an account?" : 'Already have an account?';
+  document.getElementById('auth-toggle-link').textContent = authMode === 'signin' ? ' Sign up' : ' Sign in';
+  document.getElementById('auth-confirm-group').classList.toggle('hidden', authMode !== 'signup');
+  document.getElementById('auth-error').classList.remove('show');
+}
+
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function submitAuth() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value;
+  if (!email || !password) { showAuthError('Please enter email and password.'); return; }
+
+  const usersKey = 'scrollerize_users';
+  let users = {};
+  try { users = JSON.parse(localStorage.getItem(usersKey) || '{}'); } catch(e) {}
+
+  if (authMode === 'signup') {
+    const confirm = document.getElementById('auth-confirm').value;
+    if (password !== confirm) { showAuthError('Passwords do not match.'); return; }
+    if (password.length < 6) { showAuthError('Password must be at least 6 characters.'); return; }
+    if (users[email]) { showAuthError('An account with this email already exists.'); return; }
+    users[email] = { password, data: null };
+    localStorage.setItem(usersKey, JSON.stringify(users));
+    state.user = email;
+    save();
+    document.getElementById('page-auth').style.display = 'none';
+    document.getElementById('page-setup').style.display = 'flex';
+  } else {
+    if (!users[email]) { showAuthError('No account found with that email.'); return; }
+    if (users[email].password !== password) { showAuthError('Incorrect password.'); return; }
+    // Restore user state
+    const userKey = 'scrollerize_' + email;
+    try {
+      const d = localStorage.getItem(userKey);
+      if (d) state = { ...state, ...JSON.parse(d) };
+    } catch(e) {}
+    state.user = email;
+    save();
+    document.getElementById('page-auth').style.display = 'none';
+    if (!state.apiKey) {
+      document.getElementById('page-setup').style.display = 'flex';
+    } else {
+      initApp();
+    }
+  }
+}
+
+function signOut() {
+  // Save user-specific data
+  if (state.user) {
+    const userKey = 'scrollerize_' + state.user;
+    localStorage.setItem(userKey, JSON.stringify(state));
+  }
+  state = { user:null, apiKey:'', ytKey:'', topics:[], cards:[], settings:{reviewFilter:'random',selectedTopics:[],topicSort:'date',dailyGoal:25}, stats:{streak:0,lastReviewDate:null,totalReviewed:0,totalCorrect:0,xp:0,masteredTopics:0,reviewHistory:[],todayCount:0,todayDate:null} };
+  document.getElementById('page-auth').style.display = 'flex';
+  showPage(null);
+}
+
+function saveSetup() {
+  const key = document.getElementById('setup-api-key').value.trim();
+  const yt = document.getElementById('setup-yt-key').value.trim();
+  if (!key) {
+    const e = document.getElementById('setup-error');
+    e.textContent = 'Please enter your Claude API key.';
+    e.classList.add('show');
+    return;
+  }
+  state.apiKey = key;
+  state.ytKey = yt;
+  save();
+  document.getElementById('page-setup').style.display = 'none';
+  initApp();
+}
+
+function skipSetup() {
+  document.getElementById('page-setup').style.display = 'none';
+  initApp();
+}
+
+// ══════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════
+
+const PAGE_MAP = {
+  home: 'page-home', learn: 'page-learn', review: 'page-review',
+  settings: 'page-settings', 'make-questions': 'page-make-questions',
+  'notes-to-cards': 'page-notes-to-cards', stats: 'page-stats',
+  'delete-topics': 'page-delete-topics'
+};
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  if (name && PAGE_MAP[name]) {
+    document.getElementById(PAGE_MAP[name]).classList.add('active');
+  }
+  currentPage = name;
+}
+
+function navigate(page) {
+  showPage(page);
+  if (page === 'home') {
+    updateHomeStreak();
+  } else if (page === 'learn') {
+    resetLearnPage();
+  } else if (page === 'review') {
+    loadReview();
+  } else if (page === 'settings') {
+    loadSettings();
+  } else if (page === 'make-questions') {
+    resetMakeQuestions();
+  } else if (page === 'stats') {
+    loadStats();
+  } else if (page === 'delete-topics') {
+    loadDeleteTopics();
+  } else if (page === 'notes-to-cards') {
+    resetNotesToCards();
+  }
+}
+
+function initApp() {
+  checkStreak();
+  checkTodayReset();
+  navigate('home');
+}
+
+// ══════════════════════════════════════
+// HOME
+// ══════════════════════════════════════
+
+function updateHomeStreak() {
+  const el = document.getElementById('home-streak');
+  if (state.stats.streak > 0) {
+    el.textContent = state.stats.streak + '🔥';
+  } else {
+    el.textContent = '';
+  }
+}
+
+function checkStreak() {
+  const today = todayStr();
+  const last = state.stats.lastReviewDate;
+  if (last) {
+    const diff = dayDiff(last, today);
+    if (diff > 1) state.stats.streak = 0;
+  }
+  save();
+}
+
+function checkTodayReset() {
+  const today = todayStr();
+  if (state.stats.todayDate !== today) {
+    state.stats.todayCount = 0;
+    state.stats.todayDate = today;
+    save();
+  }
+}
+
+function todayStr() {
+  return new Date().toISOString().slice(0,10);
+}
+
+function dayDiff(a, b) {
+  return Math.round((new Date(b) - new Date(a)) / 86400000);
+}
+
+// ══════════════════════════════════════
+// LEARN SOMETHING
+// ══════════════════════════════════════
+
+function resetLearnPage() {
+  document.getElementById('learn-input-step').classList.remove('hidden');
+  document.getElementById('learn-lesson-step').classList.add('hidden');
+  document.getElementById('learn-topic-input').value = '';
+  currentLesson = { topic: '', text: '', keyPoints: [], depth: 0 };
+}
+
+async function startLesson() {
+  const topic = document.getElementById('learn-topic-input').value.trim();
+  if (!topic) return;
+  if (!state.apiKey) {
+    showNotif('API Key needed', 'Please add your Claude API key in Settings.', [
+      { label: 'Go to Settings', action: "navigate('settings')" }
+    ]);
+    return;
+  }
+  currentLesson.topic = topic;
+  currentLesson.depth = 0;
+  document.getElementById('learn-input-step').classList.add('hidden');
+  document.getElementById('learn-lesson-step').classList.remove('hidden');
+  document.getElementById('learn-lesson-step').style.display = 'flex';
+  await fetchLesson(topic, 'intro');
+}
+
+async function learnMore() {
+  currentLesson.depth++;
+  document.getElementById('lesson-text').classList.add('hidden');
+  document.getElementById('lesson-loading').classList.remove('hidden');
+  await fetchLesson(currentLesson.topic, 'deeper', currentLesson.depth);
+}
+
+async function fetchLesson(topic, type, depth=0) {
+  const loadEl = document.getElementById('lesson-loading');
+  const textEl = document.getElementById('lesson-text');
+  loadEl.classList.remove('hidden');
+  textEl.classList.add('hidden');
+
+  const depthNote = depth === 0 ? 'introductory' : depth === 1 ? 'intermediate, building on the basics' : 'advanced, going deep';
+  const prompt = `You are an expert educator. Create a ${depthNote} 5-10 minute lesson about: "${topic}".
+
+Format your response as JSON with this structure:
+{
+  "title": "Lesson title",
+  "sections": [
+    {"heading": "Section heading or null", "body": "Paragraph text with <strong>bold</strong> for key terms"}
+  ],
+  "keyPoints": ["Key point 1", "Key point 2", "Key point 3", "Key point 4", "Key point 5"],
+  "youtubeSearchQuery": "Best YouTube search query to find a relevant video for this topic"
+}
+
+Requirements:
+- Write 4-6 sections, each 2-4 sentences
+- Make it engaging and memorable, like a great teacher explaining to a smart adult
+- Key points: 3-5 bullet points summarizing the most important takeaways
+- YouTube search query: specific enough to find a quality educational video
+
+Respond ONLY with the JSON object, no other text.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': state.apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.content[0].text;
+    const clean = text.replace(/```json|```/g,'').trim();
+    const lesson = JSON.parse(clean);
+
+    currentLesson.text = lesson;
+    currentLesson.keyPoints = lesson.keyPoints;
+
+    // Build HTML
+    let html = `<div class="lesson-topic-tag">${escHtml(currentLesson.topic)}</div>`;
+    html += `<div class="lesson-title">${escHtml(lesson.title)}</div>`;
+    html += `<div class="lesson-body">`;
+    lesson.sections.forEach((s, i) => {
+      if (s.heading) html += `<h3>${escHtml(s.heading)}</h3>`;
+      html += `<p>${s.body}</p>`;
+      if (i === 1 && lesson.youtubeSearchQuery) {
+        html += buildYouTubeEmbed(lesson.youtubeSearchQuery);
+      }
+    });
+    html += `</div>`;
+    html += `<div class="key-points"><div class="key-points-title">Key takeaways</div><ul>`;
+    lesson.keyPoints.forEach(p => { html += `<li>${escHtml(p)}</li>`; });
+    html += `</ul></div>`;
+
+    loadEl.classList.add('hidden');
+    textEl.innerHTML = html;
+    textEl.classList.remove('hidden');
+
+    // Earn XP
+    awardXP(20);
+
+  } catch(e) {
+    loadEl.classList.add('hidden');
+    textEl.innerHTML = `<div class="card" style="border-color:rgba(248,113,113,0.3);background:var(--red-bg)"><p style="color:var(--red)">${e.message.includes('API') ? 'API error: ' + e.message : 'Failed to generate lesson. Check your API key in Settings.'}</p></div>`;
+    textEl.classList.remove('hidden');
+  }
+}
+
+function buildYouTubeEmbed(query) {
+  if (state.ytKey) {
+    return `<div class="youtube-embed" id="yt-embed-container">
+      <iframe src="https://www.youtube-nocookie.com/embed?listType=search&list=${encodeURIComponent(query)}&autoplay=0" allowfullscreen loading="lazy"></iframe>
+    </div>`;
+  }
+  const searchUrl = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query);
+  return `<div style="background:var(--bg3);border-radius:var(--radius-sm);padding:14px 16px;margin:16px 0;display:flex;align-items:center;gap:12px">
+    <span style="font-size:24px">▶</span>
+    <div style="flex:1">
+      <div style="font-size:14px;font-weight:500;margin-bottom:4px">Watch: ${escHtml(query)}</div>
+      <a href="${searchUrl}" target="_blank" style="font-size:13px;color:var(--accent2)">Search on YouTube →</a>
+    </div>
+  </div>`;
+}
+
+function sendToReview() {
+  if (!currentLesson.topic || !currentLesson.keyPoints?.length) return;
+  addTopicWithCards(currentLesson.topic, currentLesson.keyPoints);
+  showNotif('Added to Review! ✦', `"${currentLesson.topic}" and its key points are now in your review queue.`, [
+    { label: 'Review Now', action: "navigate('review')" },
+    { label: 'Keep Learning', action: 'hideNotif()' }
+  ]);
+}
+
+// ══════════════════════════════════════
+// TOPICS & CARDS
+// ══════════════════════════════════════
+
+function addTopicWithCards(topicName, keyPoints) {
+  let topic = state.topics.find(t => t.name.toLowerCase() === topicName.toLowerCase());
+  if (!topic) {
+    topic = { id: uid(), name: topicName, createdAt: Date.now() };
+    state.topics.push(topic);
+  }
+
+  keyPoints.forEach(point => {
+    const card = {
+      id: uid(), topicId: topic.id, topicName: topic.name,
+      type: 'flash', question: point, answer: null,
+      // SM-2 fields
+      interval: 0, repetitions: 0, ef: 2.5, nextReview: Date.now(),
+      deepReview: false, deepReviewDate: null
+    };
+    state.cards.push(card);
+  });
+
+  save();
+  return topic;
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+}
+
+// ══════════════════════════════════════
+// REVIEW SYSTEM — SM-2
+// ══════════════════════════════════════
+
+function loadReview() {
+  const now = Date.now();
+  let pool = state.cards.filter(c => !c.deepReview || (c.deepReview && now >= c.nextReview));
+
+  if (state.settings.reviewFilter === 'topics' && state.settings.selectedTopics.length) {
+    pool = pool.filter(c => state.settings.selectedTopics.includes(c.topicId));
+  }
+
+  // SM-2: prioritize due cards, then sort by next review
+  pool = pool.filter(c => c.nextReview <= now + 86400000).sort((a,b) => a.nextReview - b.nextReview);
+
+  if (!pool.length) {
+    document.getElementById('review-empty').classList.remove('hidden');
+    document.getElementById('review-active').classList.add('hidden');
+    return;
+  }
+
+  reviewQueue = shuffle(pool).slice(0, 30);
+  currentCardIndex = 0;
+  document.getElementById('review-empty').classList.add('hidden');
+  document.getElementById('review-active').classList.remove('hidden');
+  document.getElementById('review-active').style.display = 'flex';
+  document.getElementById('mastery-notice').classList.remove('show');
+  renderCard();
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function renderCard() {
+  const total = reviewQueue.length;
+  const idx = currentCardIndex;
+
+  if (idx >= total) {
+    // Session done
+    document.getElementById('current-review-card').innerHTML = `
+      <div class="empty-state" style="padding:40px 0">
+        <div class="empty-state-icon">✦</div>
+        <div class="empty-state-title">Session complete!</div>
+        <div class="empty-state-body">You reviewed ${total} cards today.</div>
+        <button class="btn btn-primary mt-24" onclick="navigate('home')">Back to Home</button>
+      </div>`;
+    return;
+  }
+
+  const card = reviewQueue[idx];
+  const pct = Math.round((idx / total) * 100);
+  document.getElementById('review-progress-label').textContent = `Card ${idx+1} of ${total}`;
+  document.getElementById('review-today-label').textContent = `Today: ${state.stats.todayCount}/${state.settings.dailyGoal}`;
+  document.getElementById('review-progress-fill').style.width = pct + '%';
+
+  document.getElementById('current-review-card').innerHTML = buildCardHTML(card);
+}
+
+function buildCardHTML(card) {
+  const typeLabels = { flash: 'Flashcard', mc: 'Multiple Choice', quiz: 'Quiz' };
+  const typeClass = { flash: 'type-flash', mc: 'type-mc', quiz: 'type-quiz' };
+
+  let bodyHTML = '';
+
+  if (card.type === 'mc' && card.options) {
+    bodyHTML = `<div class="mc-options">` +
+      card.options.map((o,i) => `<button class="mc-option" onclick="selectMCOption(this, ${i === card.correctIndex})">${escHtml(o)}</button>`).join('') +
+      `</div>`;
+  } else if (card.answer) {
+    bodyHTML = `
+      <button class="btn btn-secondary reveal-btn" onclick="revealAnswer(this)">Show Answer</button>
+      <div class="answer-reveal" id="answer-reveal">${escHtml(card.answer)}</div>`;
+  }
+
+  return `<div class="review-card">
+    <div class="review-card-type ${typeClass[card.type] || 'type-flash'}">${typeLabels[card.type] || 'Flashcard'}</div>
+    <div class="review-card-topic">${escHtml(card.topicName)}</div>
+    <div class="review-card-question">${escHtml(card.question)}</div>
+    ${bodyHTML}
+    <div class="rating-section">
+      <div class="rating-label">How well did you know this? <span id="rating-val">3</span>/5</div>
+      <input type="range" min="0" max="5" step="1" value="3" oninput="document.getElementById('rating-val').textContent=this.value" id="rating-slider"/>
+      <div class="rating-actions">
+        <button class="deep-review-btn" onclick="markDeepReview('${card.id}')">⭐ Deep Review</button>
+        <button class="btn btn-primary submit-rating-btn" onclick="submitRating('${card.id}')">Next Card →</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function revealAnswer(btn) {
+  btn.style.display = 'none';
+  document.getElementById('answer-reveal').classList.add('shown');
+}
+
+function selectMCOption(el, isCorrect) {
+  document.querySelectorAll('.mc-option').forEach(o => o.disabled = true);
+  el.classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) {
+    document.querySelectorAll('.mc-option').forEach(o => {
+      if (o !== el) o.classList.add('correct'); // highlight correct (simplified)
+    });
+  }
+}
+
+function submitRating(cardId) {
+  const rating = parseInt(document.getElementById('rating-slider').value);
+  const card = state.cards.find(c => c.id === cardId);
+  if (!card) { nextCard(); return; }
+
+  // SM-2 algorithm
+  if (rating >= 3) {
+    if (card.repetitions === 0) card.interval = 1;
+    else if (card.repetitions === 1) card.interval = 6;
+    else card.interval = Math.round(card.interval * card.ef);
+    card.repetitions++;
+  } else {
+    card.repetitions = 0;
+    card.interval = 1;
+  }
+  card.ef = Math.max(1.3, card.ef + 0.1 - (5-rating) * (0.08 + (5-rating) * 0.02));
+  card.nextReview = Date.now() + card.interval * 86400000;
+
+  // Stats
+  state.stats.totalReviewed++;
+  if (rating >= 3) state.stats.totalCorrect++;
+  state.stats.todayCount++;
+  state.stats.todayDate = todayStr();
+
+  // Streak
+  const today = todayStr();
+  if (state.stats.lastReviewDate !== today) {
+    const last = state.stats.lastReviewDate;
+    if (!last || dayDiff(last, today) === 1) {
+      state.stats.streak++;
+    } else if (dayDiff(last, today) > 1) {
+      state.stats.streak = 1;
+    }
+    state.stats.lastReviewDate = today;
+    // Review history
+    state.stats.reviewHistory = state.stats.reviewHistory || [];
+    state.stats.reviewHistory.push({ date: today, count: state.stats.todayCount });
+    if (state.stats.reviewHistory.length > 30) state.stats.reviewHistory.shift();
+  }
+
+  awardXP(rating >= 3 ? 10 : 5);
+  save();
+
+  // Daily goal milestone
+  if (state.stats.todayCount === state.settings.dailyGoal) {
+    showNotif('🎯 Daily goal reached!', `You reviewed ${state.settings.dailyGoal} cards today. Streak: ${state.stats.streak} days 🔥`, [
+      { label: 'Keep Going', action: 'hideNotif()' }
+    ]);
+  }
+
+  nextCard();
+}
+
+function markDeepReview(cardId) {
+  const card = state.cards.find(c => c.id === cardId);
+  if (!card) return;
+  card.deepReview = true;
+  card.deepReviewDate = Date.now();
+  card.interval = 180; // ~6 months
+  card.nextReview = Date.now() + 180 * 86400000;
+
+  awardXP(25);
+  save();
+
+  // Check mastery for this topic
+  checkTopicMastery(card.topicId);
+  nextCard();
+}
+
+function checkTopicMastery(topicId) {
+  const topicCards = state.cards.filter(c => c.topicId === topicId);
+  if (!topicCards.length) return;
+  const deepCount = topicCards.filter(c => c.deepReview).length;
+  const pct = deepCount / topicCards.length;
+  if (pct >= 0.7) {
+    const topic = state.topics.find(t => t.id === topicId);
+    if (topic) {
+      masteryPendingTopicId = topicId;
+      const notice = document.getElementById('mastery-notice');
+      document.getElementById('mastery-notice-text').textContent =
+        `You've mastered "${topic.name}"! Over 70% of its cards are in Deep Review. Would you like to remove it?`;
+      notice.classList.add('show');
+    }
+  }
+}
+
+function deleteMasteredTopic() {
+  if (!masteryPendingTopicId) return;
+  deleteTopic(masteryPendingTopicId);
+  state.stats.masteredTopics++;
+  awardXP(100);
+  save();
+  document.getElementById('mastery-notice').classList.remove('show');
+  masteryPendingTopicId = null;
+  loadReview();
+}
+
+function keepMasteredTopic() {
+  document.getElementById('mastery-notice').classList.remove('show');
+  masteryPendingTopicId = null;
+}
+
+function nextCard() {
+  currentCardIndex++;
+  renderCard();
+}
+
+// ══════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════
+
+function loadSettings() {
+  const s = state.settings;
+  document.getElementById('filter-random-btn').className = s.reviewFilter === 'random' ? 'btn btn-primary' : 'btn btn-ghost';
+  document.getElementById('filter-topics-btn').className = s.reviewFilter === 'topics' ? 'btn btn-primary' : 'btn btn-ghost';
+  document.getElementById('topic-filter-section').classList.toggle('hidden', s.reviewFilter !== 'topics');
+
+  const goal = state.settings.dailyGoal || 25;
+  document.getElementById('daily-goal-slider').value = goal;
+  document.getElementById('daily-goal-display').textContent = goal;
+
+  document.getElementById('settings-api-key').value = state.apiKey || '';
+  document.getElementById('settings-yt-key').value = state.ytKey || '';
+
+  if (s.reviewFilter === 'topics') renderSettingsTopicList();
+}
+
+function setReviewFilter(f) {
+  state.settings.reviewFilter = f;
+  save();
+  loadSettings();
+}
+
+function setTopicSort(s) {
+  state.settings.topicSort = s;
+  document.getElementById('sort-alpha-btn').className = s === 'alpha' ? 'btn btn-primary' : 'btn btn-ghost';
+  document.getElementById('sort-date-btn').className = s === 'date' ? 'btn btn-primary' : 'btn btn-ghost';
+  renderSettingsTopicList();
+  save();
+}
+
+function renderSettingsTopicList() {
+  let topics = [...state.topics];
+  if (state.settings.topicSort === 'alpha') topics.sort((a,b) => a.name.localeCompare(b.name));
+  else topics.sort((a,b) => b.createdAt - a.createdAt);
+
+  const sel = state.settings.selectedTopics || [];
+  const el = document.getElementById('settings-topic-list');
+  if (!topics.length) { el.innerHTML = '<p style="color:var(--text3);font-size:14px">No topics yet.</p>'; return; }
+
+  el.innerHTML = topics.map(t => `
+    <div class="topic-item">
+      <div class="topic-check ${sel.includes(t.id)?'checked':''}" onclick="toggleTopicSelect('${t.id}',this)">
+        ${sel.includes(t.id)?'<svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3 4L11 1" stroke="white" stroke-width="2" fill="none"/></svg>':''}
+      </div>
+      <span class="topic-name">${escHtml(t.name)}</span>
+      <span class="topic-count">${state.cards.filter(c=>c.topicId===t.id).length} cards</span>
+    </div>`).join('');
+}
+
+function toggleTopicSelect(id, el) {
+  const sel = state.settings.selectedTopics || [];
+  const idx = sel.indexOf(id);
+  if (idx > -1) sel.splice(idx, 1);
+  else sel.push(id);
+  state.settings.selectedTopics = sel;
+  el.classList.toggle('checked', sel.includes(id));
+  el.innerHTML = sel.includes(id) ? '<svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3 4L11 1" stroke="white" stroke-width="2" fill="none"/></svg>' : '';
+  save();
+}
+
+function updateDailyGoal(val) {
+  document.getElementById('daily-goal-display').textContent = val;
+  state.settings.dailyGoal = parseInt(val);
+  save();
+}
+
+function saveApiKeys() {
+  state.apiKey = document.getElementById('settings-api-key').value.trim();
+  state.ytKey = document.getElementById('settings-yt-key').value.trim();
+  save();
+  showNotif('Keys saved', 'Your API keys have been saved.', [{ label: 'OK', action: 'hideNotif()' }]);
+}
+
+// ══════════════════════════════════════
+// PAGE 5: MAKE QUESTIONS
+// ══════════════════════════════════════
+
+function resetMakeQuestions() {
+  document.getElementById('mq-topic').value = '';
+  document.getElementById('mq-question').value = '';
+  document.getElementById('mq-answer').value = '';
+  document.getElementById('mq-topic-suggestions').innerHTML = '';
+}
+
+function suggestTopics(val) {
+  const el = document.getElementById('mq-topic-suggestions');
+  if (!val) { el.innerHTML = ''; return; }
+  const matches = state.topics.filter(t => t.name.toLowerCase().includes(val.toLowerCase())).slice(0,5);
+  el.innerHTML = matches.map(t => `<div class="chip" style="cursor:pointer" onclick="document.getElementById('mq-topic').value='${escHtml(t.name)}';document.getElementById('mq-topic-suggestions').innerHTML=''">${escHtml(t.name)}</div>`).join('');
+}
+
+function createCard(action) {
+  const topic = document.getElementById('mq-topic').value.trim();
+  const question = document.getElementById('mq-question').value.trim();
+  const answer = document.getElementById('mq-answer').value.trim();
+  if (!topic || !question) {
+    showNotif('Missing info', 'Please enter a topic and question.', [{ label: 'OK', action: 'hideNotif()' }]);
+    return;
+  }
+
+  let t = state.topics.find(x => x.name.toLowerCase() === topic.toLowerCase());
+  if (!t) {
+    t = { id: uid(), name: topic, createdAt: Date.now() };
+    state.topics.push(t);
+  }
+
+  const card = {
+    id: uid(), topicId: t.id, topicName: t.name, type: 'quiz',
+    question, answer: answer || null,
+    interval: 0, repetitions: 0, ef: 2.5, nextReview: Date.now(),
+    deepReview: false
+  };
+  state.cards.push(card);
+  awardXP(15);
+  save();
+
+  if (action === 'exit') navigate('review');
+  else resetMakeQuestions();
+}
+
+// ══════════════════════════════════════
+// PAGE 6: NOTES TO CARDS
+// ══════════════════════════════════════
+
+function resetNotesToCards() {
+  document.getElementById('ntc-input-step').classList.remove('hidden');
+  document.getElementById('ntc-loading-step').style.display = 'none';
+  document.getElementById('ntc-done-step').classList.add('hidden');
+  document.getElementById('ntc-topic').value = '';
+  document.getElementById('ntc-notes').value = '';
+}
+
+async function generateFromNotes() {
+  const topic = document.getElementById('ntc-topic').value.trim();
+  const notes = document.getElementById('ntc-notes').value.trim();
+  if (!topic || !notes) {
+    showNotif('Missing info', 'Please enter a topic name and your notes.', [{ label: 'OK', action: 'hideNotif()' }]);
+    return;
+  }
+  if (!state.apiKey) {
+    showNotif('API Key needed', 'Please add your Claude API key in Settings.', [{ label: 'Go to Settings', action: "navigate('settings')" }]);
+    return;
+  }
+
+  document.getElementById('ntc-input-step').classList.add('hidden');
+  const loadEl = document.getElementById('ntc-loading-step');
+  loadEl.style.display = 'flex';
+
+  const prompt = `You are an expert educator creating spaced repetition flashcards.
+
+Topic: "${topic}"
+Notes:
+${notes}
+
+Create review cards based on the main points in these notes. Generate a mix of:
+- Flashcard: a key fact or concept as a statement
+- Quiz: a question with an answer
+- MC: multiple choice with 4 options and correct index
+
+Return ONLY a JSON array, no other text:
+[
+  {"type": "flash", "question": "statement of key fact"},
+  {"type": "quiz", "question": "Question?", "answer": "Answer"},
+  {"type": "mc", "question": "Question?", "options": ["A","B","C","D"], "correctIndex": 0}
+]
+
+Generate 5-15 cards based on the richness of the notes. Mix types evenly.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': state.apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.content[0].text;
+    const clean = text.replace(/```json|```/g,'').trim();
+    const cards = JSON.parse(clean);
+
+    let t = state.topics.find(x => x.name.toLowerCase() === topic.toLowerCase());
+    if (!t) {
+      t = { id: uid(), name: topic, createdAt: Date.now() };
+      state.topics.push(t);
+    }
+
+    cards.forEach(c => {
+      state.cards.push({
+        id: uid(), topicId: t.id, topicName: t.name,
+        type: c.type, question: c.question, answer: c.answer || null,
+        options: c.options || null, correctIndex: c.correctIndex ?? null,
+        interval: 0, repetitions: 0, ef: 2.5, nextReview: Date.now(),
+        deepReview: false
+      });
+    });
+    awardXP(cards.length * 5);
+    save();
+
+    loadEl.style.display = 'none';
+    document.getElementById('ntc-done-step').classList.remove('hidden');
+    document.getElementById('ntc-done-title').textContent = `${cards.length} cards created!`;
+    document.getElementById('ntc-done-body').textContent = `Added to topic "${topic}". Ready to review!`;
+
+  } catch(e) {
+    loadEl.style.display = 'none';
+    document.getElementById('ntc-input-step').classList.remove('hidden');
+    showNotif('Error', 'Failed to generate cards: ' + e.message, [{ label: 'OK', action: 'hideNotif()' }]);
+  }
+}
+
+// ══════════════════════════════════════
+// STATS
+// ══════════════════════════════════════
+
+function loadStats() {
+  const s = state.stats;
+  document.getElementById('stat-streak-val').textContent = (s.streak || 0) + '🔥';
+  const ret = s.totalReviewed > 0 ? Math.round((s.totalCorrect / s.totalReviewed) * 100) : null;
+  document.getElementById('stat-retention-val').textContent = ret !== null ? ret + '%' : '—';
+  document.getElementById('stat-xp-val').textContent = (s.xp || 0).toLocaleString();
+  document.getElementById('stat-mastery-val').textContent = s.masteredTopics || 0;
+
+  const goal = state.settings.dailyGoal || 25;
+  const today = s.todayCount || 0;
+  const pct = Math.min(100, Math.round((today / goal) * 100));
+  document.getElementById('stat-daily-progress').textContent = `${today}/${goal}`;
+  document.getElementById('stat-daily-fill').style.width = pct + '%';
+  document.getElementById('stat-daily-msg').textContent = today >= goal ? '🎯 Goal reached today!' : `${goal - today} more to hit your goal`;
+
+  // Badges
+  renderBadges();
+
+  // History chart
+  renderHistoryChart();
+}
+
+function renderBadges() {
+  const grid = document.getElementById('badge-grid');
+  const badges = [];
+  const s = state.stats;
+
+  if ((s.streak || 0) >= 3) badges.push({ label: '3-day streak', tier: 'bronze' });
+  if ((s.streak || 0) >= 7) badges.push({ label: 'Week warrior', tier: 'silver' });
+  if ((s.streak || 0) >= 30) badges.push({ label: '30-day legend', tier: 'gold' });
+  if ((s.totalReviewed || 0) >= 50) badges.push({ label: '50 reviews', tier: 'bronze' });
+  if ((s.totalReviewed || 0) >= 500) badges.push({ label: '500 reviews', tier: 'silver' });
+  if ((s.masteredTopics || 0) >= 1) badges.push({ label: 'First mastery', tier: 'gold' });
+  if ((s.xp || 0) >= 1000) badges.push({ label: '1000 XP', tier: 'silver' });
+
+  if (!badges.length) { grid.innerHTML = '<div style="color:var(--text3);font-size:14px">Complete topics to earn badges</div>'; return; }
+  grid.innerHTML = badges.map(b => `<div class="badge badge-${b.tier}">
+    ${b.tier==='gold'?'🏆':b.tier==='silver'?'🥈':'🥉'} ${escHtml(b.label)}
+  </div>`).join('');
+}
+
+function renderHistoryChart() {
+  const hist = state.stats.reviewHistory || [];
+  const chartEl = document.getElementById('review-history-chart');
+  const labelsEl = document.getElementById('review-history-labels');
+
+  // Last 7 days
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const ds = d.toISOString().slice(0,10);
+    const entry = hist.find(h => h.date === ds);
+    days.push({ label: ['Su','Mo','Tu','We','Th','Fr','Sa'][d.getDay()], count: entry ? entry.count : 0 });
+  }
+  const max = Math.max(...days.map(d => d.count), 1);
+
+  chartEl.innerHTML = days.map(d => {
+    const h = Math.max(4, Math.round((d.count / max) * 72));
+    return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px">
+      <span style="font-size:11px;color:var(--text3)">${d.count||''}</span>
+      <div style="width:100%;background:${d.count>0?'var(--accent)':'var(--surface2)'};height:${h}px;border-radius:4px"></div>
+    </div>`;
+  }).join('');
+
+  labelsEl.innerHTML = days.map(d =>
+    `<div style="flex:1;text-align:center;font-size:11px;color:var(--text3)">${d.label}</div>`
+  ).join('');
+}
+
+// ══════════════════════════════════════
+// DELETE TOPICS
+// ══════════════════════════════════════
+
+let toDelete = new Set();
+
+function loadDeleteTopics() {
+  toDelete = new Set();
+  const el = document.getElementById('delete-topic-list');
+  if (!state.topics.length) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-state-title">No topics yet</div></div>';
+    return;
+  }
+  el.innerHTML = state.topics.map(t => {
+    const count = state.cards.filter(c => c.topicId === t.id).length;
+    return `<div class="topic-item">
+      <div class="topic-check" id="del-check-${t.id}" onclick="toggleDelete('${t.id}',this)"></div>
+      <span class="topic-name">${escHtml(t.name)}</span>
+      <span class="topic-count">${count} cards</span>
+    </div>`;
+  }).join('');
+  document.getElementById('delete-confirm-btn').disabled = true;
+}
+
+function toggleDelete(id, el) {
+  if (toDelete.has(id)) { toDelete.delete(id); el.classList.remove('checked'); el.innerHTML = ''; }
+  else { toDelete.add(id); el.classList.add('checked'); el.innerHTML = '<svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 5l3 4L11 1" stroke="white" stroke-width="2" fill="none"/></svg>'; }
+  document.getElementById('delete-confirm-btn').disabled = toDelete.size === 0;
+}
+
+function confirmDeleteTopics() {
+  if (!toDelete.size) return;
+  toDelete.forEach(id => deleteTopic(id));
+  toDelete = new Set();
+  save();
+  navigate('settings');
+}
+
+function deleteTopic(id) {
+  state.topics = state.topics.filter(t => t.id !== id);
+  state.cards = state.cards.filter(c => c.topicId !== id);
+}
+
+// ══════════════════════════════════════
+// XP & GAMIFICATION
+// ══════════════════════════════════════
+
+function awardXP(pts) {
+  state.stats.xp = (state.stats.xp || 0) + pts;
+  save();
+}
+
+// ══════════════════════════════════════
+// NOTIFICATIONS
+// ══════════════════════════════════════
+
+let notifTimeout = null;
+
+function showNotif(title, body, actions=[]) {
+  document.getElementById('notif-title').textContent = title;
+  document.getElementById('notif-body').textContent = body;
+  const actEl = document.getElementById('notif-actions');
+  actEl.innerHTML = actions.map(a => `<button class="btn ${actions.length===1?'btn-primary':'btn-secondary'}" style="flex:1;padding:10px" onclick="${a.action}">${escHtml(a.label)}</button>`).join('');
+  const notif = document.getElementById('global-notification');
+  notif.classList.add('show');
+  if (notifTimeout) clearTimeout(notifTimeout);
+  if (!actions.length) notifTimeout = setTimeout(hideNotif, 3000);
+}
+
+function hideNotif() {
+  document.getElementById('global-notification').classList.remove('show');
+}
+
+// ══════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════
+// BOOT
+// ══════════════════════════════════════
+
+load();
+// If user was previously signed in, restore session
+if (state.user) {
+  const userKey = 'scrollerize_' + state.user;
+  try {
+    const d = localStorage.getItem(userKey);
+    if (d) state = { ...state, ...JSON.parse(d) };
+    state.user = state.user; // keep user
+  } catch(e) {}
+
+  document.getElementById('page-auth').style.display = 'none';
+  if (!state.apiKey) {
+    document.getElementById('page-setup').style.display = 'flex';
+  } else {
+    initApp();
+  }
+}
+</script>
+</body>
+</html>
