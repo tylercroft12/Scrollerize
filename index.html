@@ -1041,7 +1041,7 @@ Respond ONLY with the JSON object, no other text.`;
     const res = await fetch('/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
+      body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
     });
     if (!res.ok) {
       const errText = await res.text();
@@ -1537,7 +1537,7 @@ Generate 5-15 cards based on the richness of the notes. Mix types evenly.`;
     const res = await fetch('/api/claude', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
+      body: JSON.stringify({ model: 'claude-sonnet-4-5', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
@@ -1735,7 +1735,7 @@ function escHtml(s) {
 // ══════════════════════════════════════
 
 // Test proxy connectivity on load
-fetch('/api/claude', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:5,messages:[{role:'user',content:'hi'}]}) })
+fetch('/api/claude', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({model:'claude-sonnet-4-5',max_tokens:5,messages:[{role:'user',content:'hi'}]}) })
   .then(r => r.json())
   .then(d => console.log('Proxy test:', d.content ? 'OK' : JSON.stringify(d)))
   .catch(e => console.error('Proxy test failed:', e.message));
