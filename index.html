@@ -417,29 +417,20 @@ input[type="range"]::-webkit-slider-thumb {
   <p class="auth-tagline">Add your Claude API key to enable AI lessons</p>
   <div class="setup-card">
     <div class="setup-step">
-      <div class="setup-step-num">1</div>
-      <div class="setup-step-body">Go to <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a> and create a free account</div>
+      <div class="setup-step-num">✓</div>
+      <div class="setup-step-body">Your Claude API key is already configured on the server — no setup needed here!</div>
     </div>
     <div class="setup-step">
-      <div class="setup-step-num">2</div>
-      <div class="setup-step-body">Click <strong style="color:var(--text)">Create Key</strong> and copy your API key</div>
-    </div>
-    <div class="setup-step">
-      <div class="setup-step-num">3</div>
-      <div class="setup-step-body">Paste it below — it's stored securely in your account and never shared</div>
+      <div class="setup-step-num">+</div>
+      <div class="setup-step-body">Optionally add a YouTube API key for embedded videos in lessons. Get one free at <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a> → YouTube Data API v3</div>
     </div>
     <div class="field-group">
-      <div class="field-label">Claude API Key</div>
-      <input type="password" id="setup-api-key" placeholder="sk-ant-..."/>
-    </div>
-    <div class="field-group">
-      <div class="field-label">YouTube Data API Key <span style="color:var(--text3)">(optional but recommended)</span></div>
+      <div class="field-label">YouTube Data API Key <span style="color:var(--text3)">(optional)</span></div>
       <input type="text" id="setup-yt-key" placeholder="AIza..."/>
-      <p style="font-size:12px;color:var(--text3);margin-top:6px">Get a free key at <a href="https://console.cloud.google.com" target="_blank" style="color:var(--accent2)">console.cloud.google.com</a> → YouTube Data API v3</p>
     </div>
     <div class="auth-error" id="setup-error"></div>
-    <button class="btn btn-primary btn-full" onclick="saveSetup()">Save &amp; Start Learning</button>
-    <p style="text-align:center;margin-top:14px"><a style="color:var(--text3);font-size:13px;cursor:pointer" onclick="skipSetup()">Skip for now (limited features)</a></p>
+    <button class="btn btn-primary btn-full" onclick="saveSetup()">Start Learning →</button>
+    <p style="text-align:center;margin-top:14px"><a style="color:var(--text3);font-size:13px;cursor:pointer" onclick="skipSetup()">Skip</a></p>
   </div>
 </div>
 
@@ -588,13 +579,15 @@ input[type="range"]::-webkit-slider-thumb {
       <p style="font-size:13px;color:var(--text3);margin-top:8px">cards per day</p>
     </div>
 
-    <!-- API Key -->
-    <div class="card mb-16">
-      <div class="field-label mb-8">Claude API Key</div>
-      <input type="password" id="settings-api-key" placeholder="sk-ant-…" style="margin-bottom:10px"/>
-      <div class="field-label mb-8" style="margin-top:8px">YouTube API Key <span style="color:var(--text3)">(optional)</span></div>
-      <input type="text" id="settings-yt-key" placeholder="AIza…" style="margin-bottom:10px"/>
-      <button class="btn btn-secondary" onclick="saveApiKeys()">Save Keys</button>
+    <!-- API Key info -->
+    <div class="card mb-16" style="background:var(--accent-bg);border-color:rgba(124,106,245,0.2)">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:20px">🔐</span>
+        <div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:4px">API keys are stored securely on the server</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.5">Your Claude API key is set as an environment variable in Vercel and never exposed in the browser. To change it, update the <code style="background:var(--bg3);padding:2px 6px;border-radius:4px">ANTHROPIC_API_KEY</code> variable in your Vercel project settings.</div>
+        </div>
+      </div>
     </div>
 
     <!-- Menu items -->
@@ -857,9 +850,10 @@ function submitAuth() {
     users[email] = { password, data: null };
     localStorage.setItem(usersKey, JSON.stringify(users));
     state.user = email;
+    state.apiKey = 'server';
     save();
     document.getElementById('page-auth').style.display = 'none';
-    document.getElementById('page-setup').style.display = 'flex';
+    initApp();
   } else {
     if (!users[email]) { showAuthError('No account found with that email.'); return; }
     if (users[email].password !== password) { showAuthError('Incorrect password.'); return; }
@@ -872,11 +866,7 @@ function submitAuth() {
     state.user = email;
     save();
     document.getElementById('page-auth').style.display = 'none';
-    if (!state.apiKey) {
-      document.getElementById('page-setup').style.display = 'flex';
-    } else {
-      initApp();
-    }
+    initApp();
   }
 }
 
@@ -892,16 +882,9 @@ function signOut() {
 }
 
 function saveSetup() {
-  const key = document.getElementById('setup-api-key').value.trim();
   const yt = document.getElementById('setup-yt-key').value.trim();
-  if (!key) {
-    const e = document.getElementById('setup-error');
-    e.textContent = 'Please enter your Claude API key.';
-    e.classList.add('show');
-    return;
-  }
-  state.apiKey = key;
   state.ytKey = yt;
+  state.apiKey = 'server'; // key lives on server
   save();
   document.getElementById('page-setup').style.display = 'none';
   initApp();
@@ -1012,12 +995,6 @@ function resetLearnPage() {
 async function startLesson() {
   const topic = document.getElementById('learn-topic-input').value.trim();
   if (!topic) return;
-  if (!state.apiKey) {
-    showNotif('API Key needed', 'Please add your Claude API key in Settings.', [
-      { label: 'Go to Settings', action: "navigate('settings')" }
-    ]);
-    return;
-  }
   currentLesson.topic = topic;
   currentLesson.depth = 0;
   document.getElementById('learn-input-step').classList.add('hidden');
@@ -1061,9 +1038,9 @@ Requirements:
 Respond ONLY with the JSON object, no other text.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/claude', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': state.apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
     });
     const data = await res.json();
@@ -1551,9 +1528,9 @@ Return ONLY a JSON array, no other text:
 Generate 5-15 cards based on the richness of the notes. Mix types evenly.`;
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/claude', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': state.apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      headers: { 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 2000, messages: [{ role: 'user', content: prompt }] })
     });
     const data = await res.json();
